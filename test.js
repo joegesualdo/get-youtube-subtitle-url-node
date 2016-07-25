@@ -1,6 +1,6 @@
 import test from 'ava';
-import @joegesualdo/get-youtube-subtitle-url-node from './dist'
+import getYoutubeSubtitleUrl from './'
 
 test(t => {
-    t.deepEqual([1, 2], [1, 2]);
+  t.deepEqual([1, 2], [1, 2]);
 });
