@@ -8,7 +8,8 @@ NonExistentSubtitleError.prototype = Error.prototype;
 
 function getAutoSubs(videoId) {
   return new Promise((resolve, reject) => {
-    PythonShell.run('./youtube-dl/youtube_dl/__main__.py', {
+    PythonShell.run('__main__.py', {
+      scriptPath: `${__dirname}/youtube-dl/youtube_dl`,
       args: [
         '--write-auto-sub',
         '--skip-download',
@@ -31,7 +32,8 @@ function getAutoSubs(videoId) {
 
 function getNonAutoSubs(videoId) {
   return new Promise((resolve, reject) => {
-    PythonShell.run('./youtube-dl/youtube_dl/__main__.py', {
+    PythonShell.run('__main__.py', {
+      scriptPath: `${__dirname}/youtube-dl/youtube_dl`,
       args: [
         '--write-sub',
         '--skip-download',
