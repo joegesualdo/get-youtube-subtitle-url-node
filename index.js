@@ -54,17 +54,34 @@ function getNonAutoSubs(videoId) {
   });
 }
 
-function getYoutubeSubtitleUrl(videoId) {
+function getYoutubeSubtitleUrl(videoId, opts = {}) {
+  let type = 'either'
+  // onlye accepts auto and nonauto type
+  if (opts.type && (opts.type !== 'auto' && opts.type !== 'nonauto' && opts.type !== 'either')) {
+    throw new Error('type is not valid')
+  }
+  // default should be either 
+  if (opts.type === 'auto' || opts.type === 'nonauto') {
+    type = opts.type;
+  }
   return new Promise((resolve, reject) => {
-    getNonAutoSubs(videoId)
-    .then((url) => {
-      const result = {
-        automaticallyGenerated: false,
-        url,
-      };
-      resolve(result);
-    })
-    .catch(() => {
+    if (type === 'nonauto') {
+      getNonAutoSubs(videoId)
+      .then((url) => {
+        const result = {
+          automaticallyGenerated: false,
+          url,
+        };
+        resolve(result);
+      })
+      .catch(err => {
+        if (err.message.indexOf("video doesn't have subtitles")) {
+          reject(new NonExistentSubtitleError(`Non-auto Subtitles dont exist for ${videoId}`));
+        } else {
+          reject(err);
+        }
+      })
+    } else if (type === 'auto') {
       getAutoSubs(videoId)
       .then((url) => {
         const result = {
@@ -75,12 +92,38 @@ function getYoutubeSubtitleUrl(videoId) {
       })
       .catch(err => {
         if (err.message.indexOf("Couldn't find automatic captions for")) {
-          reject(new NonExistentSubtitleError(`Subtitles dont exist for ${videoId}`));
+          reject(new NonExistentSubtitleError(`Auto Subtitles dont exist for ${videoId}`));
         } else {
           reject(err);
         }
       });
-    });
+    } else if (type === 'either') {
+      getNonAutoSubs(videoId)
+      .then((url) => {
+        const result = {
+          automaticallyGenerated: false,
+          url,
+        };
+        resolve(result);
+      })
+      .catch(() => {
+        getAutoSubs(videoId)
+        .then((url) => {
+          const result = {
+            automaticallyGenerated: true,
+            url,
+          };
+          resolve(result);
+        })
+        .catch(err => {
+          if (err.message.indexOf("Couldn't find automatic captions for")) {
+            reject(new NonExistentSubtitleError(`Subtitles dont exist for ${videoId}`));
+          } else {
+            reject(err);
+          }
+        });
+      });
+    }
   });
 }
 

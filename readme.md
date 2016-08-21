@@ -25,7 +25,7 @@ getYoutubeSubtitleUrl('TImPW-khOww')
 ```
 
 ## API
-### `getYoutubeSubtitleUrl(videoId)`
+### `getYoutubeSubtitleUrl(videoId, opts)`
 > Fetches the url for the subtitles 
 
 | Name | Type | Description |
@@ -34,11 +34,17 @@ getYoutubeSubtitleUrl('TImPW-khOww')
 
 Returns: `Object`, with the url and whether or not the subtitles were automatically generated.
 
+##### Options
+| Name | Type | Default | Options | Description |
+|------|------|-------------|----------|-------|
+| type | `String` | `either` | `auto`, `nonauto`, `either` |The type of subtitles|
+
+
 ```javascript
 import getYoutubeSubtitleUrl from '@joegesualdo/get-youtube-subtitle-url-node';
 
 const videoId ='TImPW-khOww'
-getYoutubeSubtitleUrl('TImPW-khOww')
+getYoutubeSubtitleUrl('TImPW-khOww', {type: 'nonauto'})
 .then((result) => {
   console.log(result)
   // {
