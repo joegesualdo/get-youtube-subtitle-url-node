@@ -62,7 +62,7 @@ module.exports =
 	function getAutoSubs(videoId) {
 	  return new Promise(function (resolve, reject) {
 	    PythonShell.run('__main__.py', {
-	      scriptPath: appRoot + '/youtube-dl/youtube_dl',
+	      scriptPath: (process.cwd()) + '/youtube-dl/youtube_dl',
 	      args: ['--write-auto-sub', '--skip-download', '--sub-format', 'vtt', 'https://www.youtube.com/watch?v=' + videoId]
 	    }, function (err, results) {
 	      if (err) {
@@ -81,7 +81,7 @@ module.exports =
 	function getNonAutoSubs(videoId) {
 	  return new Promise(function (resolve, reject) {
 	    PythonShell.run('__main__.py', {
-	      scriptPath: appRoot + '/youtube-dl/youtube_dl',
+	      scriptPath: (process.cwd()) + '/youtube-dl/youtube_dl',
 	      args: ['--write-sub', '--skip-download', '--sub-format', 'vtt', 'https://www.youtube.com/watch?v=' + videoId]
 	    }, function (err, results) {
 	      if (err) {
@@ -153,6 +153,7 @@ module.exports =
 	          };
 	          resolve(result);
 	        }).catch(function (err) {
+	          console.log(err);
 	          if (err.message.indexOf("Couldn't find automatic captions for")) {
 	            reject(new NonExistentSubtitleError('Subtitles dont exist for ' + videoId));
 	          } else {

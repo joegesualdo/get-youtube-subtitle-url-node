@@ -10,7 +10,7 @@ NonExistentSubtitleError.prototype = Error.prototype;
 function getAutoSubs(videoId) {
   return new Promise((resolve, reject) => {
     PythonShell.run('__main__.py', {
-      scriptPath: `${appRoot}/youtube-dl/youtube_dl`,
+      scriptPath: `${__dirname}/youtube-dl/youtube_dl`,
       args: [
         '--write-auto-sub',
         '--skip-download',
@@ -34,7 +34,7 @@ function getAutoSubs(videoId) {
 function getNonAutoSubs(videoId) {
   return new Promise((resolve, reject) => {
     PythonShell.run('__main__.py', {
-      scriptPath: `${appRoot}/youtube-dl/youtube_dl`,
+      scriptPath: `${__dirname}/youtube-dl/youtube_dl`,
       args: [
         '--write-sub',
         '--skip-download',
@@ -117,6 +117,7 @@ function getYoutubeSubtitleUrl(videoId, opts = {}) {
           resolve(result);
         })
         .catch(err => {
+          console.log(err)
           if (err.message.indexOf("Couldn't find automatic captions for")) {
             reject(new NonExistentSubtitleError(`Subtitles dont exist for ${videoId}`));
           } else {

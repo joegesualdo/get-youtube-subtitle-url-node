@@ -1,6 +1,6 @@
 {
   "name": "@joegesualdo/get-youtube-subtitle-url-node",
-  "version": "0.0.10",
+  "version": "0.0.12",
   "description": "Get the url for a youtube video's subtitles.",
   "repository": "joegesualdo/get-youtube-subtitle-url-node",
   "main": "./dist/index.js",
@@ -25,6 +25,6 @@
   "dependencies": {
     "app-root-path": "^2.0.1",
     "python-shell": "^0.4.0",
-    "distify-cli": "^0.0.14"
+    "distify-cli": "^0.0.15"
   }
 }
