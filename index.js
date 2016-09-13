@@ -1,4 +1,5 @@
 const PythonShell = require('python-shell');
+var appRoot = require('app-root-path');
 
 function NonExistentSubtitleError(message) {
   this.message = message;
@@ -9,7 +10,7 @@ NonExistentSubtitleError.prototype = Error.prototype;
 function getAutoSubs(videoId) {
   return new Promise((resolve, reject) => {
     PythonShell.run('__main__.py', {
-      scriptPath: `${__dirname}/youtube-dl/youtube_dl`,
+      scriptPath: `${appRoot}/youtube-dl/youtube_dl`,
       args: [
         '--write-auto-sub',
         '--skip-download',
@@ -33,7 +34,7 @@ function getAutoSubs(videoId) {
 function getNonAutoSubs(videoId) {
   return new Promise((resolve, reject) => {
     PythonShell.run('__main__.py', {
-      scriptPath: `${__dirname}/youtube-dl/youtube_dl`,
+      scriptPath: `${appRoot}/youtube-dl/youtube_dl`,
       args: [
         '--write-sub',
         '--skip-download',
