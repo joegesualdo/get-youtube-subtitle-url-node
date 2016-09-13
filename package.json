@@ -1,6 +1,6 @@
 {
   "name": "@joegesualdo/get-youtube-subtitle-url-node",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Get the url for a youtube video's subtitles.",
   "repository": "joegesualdo/get-youtube-subtitle-url-node",
   "main": "./dist/index.js",

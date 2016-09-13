@@ -128,7 +128,5 @@ function getYoutubeSubtitleUrl(videoId, opts = {}) {
   });
 }
 
-module.exports = {
-  default: getYoutubeSubtitleUrl,
-};
+export default getYoutubeSubtitleUrl;
 

@@ -47,6 +47,9 @@ module.exports =
 
 	'use strict';
 
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	var PythonShell = __webpack_require__(1);
 	var appRoot = __webpack_require__(2);
 
@@ -65,7 +68,6 @@ module.exports =
 	      if (err) {
 	        reject(err);
 	      } else {
-	        console.log(err);
 	        if (results.indexOf('Default Subtitle:') === -1) {
 	          reject(new Error('No subtitles for video: ' + videoId + ' '));
 	        } else {
@@ -151,7 +153,6 @@ module.exports =
 	          };
 	          resolve(result);
 	        }).catch(function (err) {
-	          console.log(err);
 	          if (err.message.indexOf("Couldn't find automatic captions for")) {
 	            reject(new NonExistentSubtitleError('Subtitles dont exist for ' + videoId));
 	          } else {
@@ -163,9 +164,10 @@ module.exports =
 	  });
 	}
 
-	module.exports = {
-	  default: getYoutubeSubtitleUrl
-	};
+	exports.default = getYoutubeSubtitleUrl;
+	// module.exports = {
+	//   default: getYoutubeSubtitleUrl,
+	// };
 
 /***/ },
 /* 1 */
