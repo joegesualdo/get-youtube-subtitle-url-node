@@ -1,3 +1,5 @@
+"use strict"
+
 const PythonShell = require('python-shell');
 var appRoot = require('app-root-path');
 
@@ -55,8 +57,9 @@ function getNonAutoSubs(videoId) {
   });
 }
 
-function getYoutubeSubtitleUrl(videoId, opts = {}) {
-  let type = 'either'
+function getYoutubeSubtitleUrl(videoId, opts) {
+  opts = opts || {}
+  var type = 'either'
   // onlye accepts auto and nonauto type
   if (opts.type && (opts.type !== 'auto' && opts.type !== 'nonauto' && opts.type !== 'either')) {
     throw new Error('type is not valid')
@@ -117,7 +120,6 @@ function getYoutubeSubtitleUrl(videoId, opts = {}) {
           resolve(result);
         })
         .catch(err => {
-          console.log(err)
           if (err.message.indexOf("Couldn't find automatic captions for")) {
             reject(new NonExistentSubtitleError(`Subtitles dont exist for ${videoId}`));
           } else {
@@ -129,5 +131,8 @@ function getYoutubeSubtitleUrl(videoId, opts = {}) {
   });
 }
 
-export default getYoutubeSubtitleUrl;
+// export default getYoutubeSubtitleUrl;
+module.exports = {
+  default: getYoutubeSubtitleUrl
+}
 

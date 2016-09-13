@@ -45,7 +45,7 @@ module.exports =
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	/* WEBPACK VAR INJECTION */(function(__dirname) {'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -61,8 +61,10 @@ module.exports =
 
 	function getAutoSubs(videoId) {
 	  return new Promise(function (resolve, reject) {
+	    var url = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"file!./index.js\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	    console.log(url);
 	    PythonShell.run('__main__.py', {
-	      scriptPath: (__dirname) + '/youtube-dl/youtube_dl',
+	      scriptPath: __dirname + '/youtube-dl/youtube_dl',
 	      args: ['--write-auto-sub', '--skip-download', '--sub-format', 'vtt', 'https://www.youtube.com/watch?v=' + videoId]
 	    }, function (err, results) {
 	      if (err) {
@@ -81,7 +83,7 @@ module.exports =
 	function getNonAutoSubs(videoId) {
 	  return new Promise(function (resolve, reject) {
 	    PythonShell.run('__main__.py', {
-	      scriptPath: (__dirname) + '/youtube-dl/youtube_dl',
+	      scriptPath: __dirname + '/youtube-dl/youtube_dl',
 	      args: ['--write-sub', '--skip-download', '--sub-format', 'vtt', 'https://www.youtube.com/watch?v=' + videoId]
 	    }, function (err, results) {
 	      if (err) {
@@ -166,6 +168,7 @@ module.exports =
 	}
 
 	exports.default = getYoutubeSubtitleUrl;
+	/* WEBPACK VAR INJECTION */}.call(exports, ""))
 
 /***/ },
 /* 1 */

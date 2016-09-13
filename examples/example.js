@@ -1,4 +1,5 @@
-var getYoutubeSubtitleUrl = require('./../dist/index.js').default;
+"use strict"
+var getYoutubeSubtitleUrl = require('./../index.js').default
 // let id = 'vKosBJ1Uko0'
 // let id = 'q_q61B-DyPk'
 // let id ='TImPW-khOww'
