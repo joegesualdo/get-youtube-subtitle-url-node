@@ -165,9 +165,6 @@ module.exports =
 	}
 
 	exports.default = getYoutubeSubtitleUrl;
-	// module.exports = {
-	//   default: getYoutubeSubtitleUrl,
-	// };
 
 /***/ },
 /* 1 */
