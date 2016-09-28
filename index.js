@@ -3,6 +3,9 @@
 const PythonShell = require('python-shell');
 var appRoot = require('app-root-path');
 
+const loudRejection = require('loud-rejection');
+loudRejection();
+
 function NonExistentSubtitleError(message) {
   this.message = message;
   this.stack = (new Error().stack);
@@ -80,7 +83,8 @@ function getYoutubeSubtitleUrl(videoId, opts) {
       })
       .catch(err => {
         if (err.message.indexOf("video doesn't have subtitles")) {
-          reject(new NonExistentSubtitleError(`Non-auto Subtitles dont exist for ${videoId}`));
+          // reject(new NonExistentSubtitleError(`Non-auto Subtitles dont exist for ${videoId}`));
+          reject(`Auto Subtitles dont exist for ${videoId}`);
         } else {
           reject(err);
         }
@@ -96,7 +100,8 @@ function getYoutubeSubtitleUrl(videoId, opts) {
       })
       .catch(err => {
         if (err.message.indexOf("Couldn't find automatic captions for")) {
-          reject(new NonExistentSubtitleError(`Auto Subtitles dont exist for ${videoId}`));
+          // reject(new NonExistentSubtitleError(`Auto Subtitles dont exist for ${videoId}`));
+          reject(`Auto Subtitles dont exist for ${videoId}`);
         } else {
           reject(err);
         }
@@ -121,7 +126,8 @@ function getYoutubeSubtitleUrl(videoId, opts) {
         })
         .catch(err => {
           if (err.message.indexOf("Couldn't find automatic captions for")) {
-            reject(new NonExistentSubtitleError(`Subtitles dont exist for ${videoId}`));
+            // reject(new NonExistentSubtitleError(`Subtitles dont exist for ${videoId}`));
+            reject(`Auto Subtitles dont exist for ${videoId}`);
           } else {
             reject(err);
           }
