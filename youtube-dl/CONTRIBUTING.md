@@ -3,7 +3,7 @@
 $ youtube-dl -v <your command line>
 [debug] System config: []
 [debug] User config: []
-[debug] Command-line args: [u'-v', u'http://www.youtube.com/watch?v=BaW_jenozKcj']
+[debug] Command-line args: [u'-v', u'https://www.youtube.com/watch?v=BaW_jenozKcj']
 [debug] Encodings: locale cp1251, fs mbcs, out cp866, pref cp1251
 [debug] youtube-dl version 2015.12.06
 [debug] Git HEAD: 135392e
@@ -12,7 +12,7 @@ $ youtube-dl -v <your command line>
 [debug] Proxy map: {}
 ...
 ```
-**Do not post screenshots of verbose log only plain text is acceptable.**
+**Do not post screenshots of verbose logs; only plain text is acceptable.**
 
 The output (including the first lines) contains important debugging information. Issues without the full output are often not reproducible and therefore do not get solved in short order, if ever.
 
@@ -34,7 +34,7 @@ For bug reports, this means that your report should contain the *complete* outpu
 
 If your server has multiple IPs or you suspect censorship, adding `--call-home` may be a good idea to get more diagnostics. If the error is `ERROR: Unable to extract ...` and you cannot reproduce it from multiple countries, add `--dump-pages` (warning: this will yield a rather large output, redirect it to the file `log.txt` by adding `>log.txt 2>&1` to your command-line) or upload the `.dump` files you get when you add `--write-pages` [somewhere](https://gist.github.com/).
 
-**Site support requests must contain an example URL**. An example URL is a URL you might want to download, like `http://www.youtube.com/watch?v=BaW_jenozKc`. There should be an obvious video present. Except under very special circumstances, the main page of a video service (e.g. `http://www.youtube.com/`) is *not* an example URL.
+**Site support requests must contain an example URL**. An example URL is a URL you might want to download, like `https://www.youtube.com/watch?v=BaW_jenozKc`. There should be an obvious video present. Except under very special circumstances, the main page of a video service (e.g. `https://www.youtube.com/`) is *not* an example URL.
 
 ###  Are you using the latest version?
 
@@ -46,7 +46,7 @@ Make sure that someone has not already opened the issue you're trying to open. S
 
 ###  Why are existing options not enough?
 
-Before requesting a new feature, please have a quick peek at [the list of supported options](https://github.com/rg3/youtube-dl/blob/master/README.md#synopsis). Many feature requests are for features that actually exist already! Please, absolutely do show off your work in the issue report and detail how the existing similar options do *not* solve your problem.
+Before requesting a new feature, please have a quick peek at [the list of supported options](https://github.com/rg3/youtube-dl/blob/master/README.md#options). Many feature requests are for features that actually exist already! Please, absolutely do show off your work in the issue report and detail how the existing similar options do *not* solve your problem.
 
 ###  Is there enough context in your bug report?
 
@@ -58,7 +58,7 @@ We are then presented with a very complicated request when the original problem 
 
 Some of our users seem to think there is a limit of issues they can or should open. There is no limit of issues they can or should open. While it may seem appealing to be able to dump all your issues into one ticket, that means that someone who solves one of your issues cannot mark the issue as closed. Typically, reporting a bunch of issues leads to the ticket lingering since nobody wants to attack that behemoth, until someone mercifully splits the issue into multiple ones.
 
-In particular, every site support request issue should only pertain to services at one site (generally under a common domain, but always using the same backend technology). Do not request support for vimeo user videos, Whitehouse podcasts, and Google Plus pages in the same issue. Also, make sure that you don't post bug reports alongside feature requests. As a rule of thumb, a feature request does not include outputs of youtube-dl that are not immediately related to the feature at hand. Do not post reports of a network error alongside the request for a new video service.
+In particular, every site support request issue should only pertain to services at one site (generally under a common domain, but always using the same backend technology). Do not request support for vimeo user videos, White house podcasts, and Google Plus pages in the same issue. Also, make sure that you don't post bug reports alongside feature requests. As a rule of thumb, a feature request does not include outputs of youtube-dl that are not immediately related to the feature at hand. Do not post reports of a network error alongside the request for a new video service.
 
 ###  Is anyone going to need the feature?
 
@@ -66,11 +66,11 @@ Only post features that you (or an incapacitated friend you can personally talk 
 
 ###  Is your question about youtube-dl?
 
-It may sound strange, but some bug reports we receive are completely unrelated to youtube-dl and relate to a different or even the reporter's own application. Please make sure that you are actually using youtube-dl. If you are using a UI for youtube-dl, report the bug to the maintainer of the actual application providing the UI. On the other hand, if your UI for youtube-dl fails in some way you believe is related to youtube-dl, by all means, go ahead and report the bug.
+It may sound strange, but some bug reports we receive are completely unrelated to youtube-dl and relate to a different, or even the reporter's own, application. Please make sure that you are actually using youtube-dl. If you are using a UI for youtube-dl, report the bug to the maintainer of the actual application providing the UI. On the other hand, if your UI for youtube-dl fails in some way you believe is related to youtube-dl, by all means, go ahead and report the bug.
 
 # DEVELOPER INSTRUCTIONS
 
-Most users do not need to build youtube-dl and can [download the builds](http://rg3.github.io/youtube-dl/download.html) or get them from their distribution.
+Most users do not need to build youtube-dl and can [download the builds](https://rg3.github.io/youtube-dl/download.html) or get them from their distribution.
 
 To run youtube-dl as a developer, you don't need to build anything either. Simply execute
 
@@ -82,19 +82,21 @@ To run the test, simply invoke your favorite test runner, or execute a test file
     python test/test_download.py
     nosetests
 
+See item 6 of [new extractor tutorial](#adding-support-for-a-new-site) for how to run extractor specific test cases.
+
 If you want to create a build of youtube-dl yourself, you'll need
 
 * python
-* make (both GNU make and BSD make are supported)
+* make (only GNU make is supported)
 * pandoc
 * zip
 * nosetests
 
 ### Adding support for a new site
 
-If you want to add support for a new site, first of all **make sure** this site is **not dedicated to [copyright infringement](#can-you-add-support-for-this-anime-video-site-or-site-which-shows-current-movies-for-free)**. youtube-dl does **not support** such sites thus pull requests adding support for them **will be rejected**.
+If you want to add support for a new site, first of all **make sure** this site is **not dedicated to [copyright infringement](README.md#can-you-add-support-for-this-anime-video-site-or-site-which-shows-current-movies-for-free)**. youtube-dl does **not support** such sites thus pull requests adding support for them **will be rejected**.
 
-After you have ensured this site is distributing it's content legally, you can follow this quick list (assuming your service is called `yourextractor`):
+After you have ensured this site is distributing its content legally, you can follow this quick list (assuming your service is called `yourextractor`):
 
 1. [Fork this repository](https://github.com/rg3/youtube-dl/fork)
 2. Check out the source code with:
@@ -118,13 +120,13 @@ After you have ensured this site is distributing it's content legally, you can f
     class YourExtractorIE(InfoExtractor):
         _VALID_URL = r'https?://(?:www\.)?yourextractor\.com/watch/(?P<id>[0-9]+)'
         _TEST = {
-            'url': 'http://yourextractor.com/watch/42',
+            'url': 'https://yourextractor.com/watch/42',
             'md5': 'TODO: md5 sum of the first 10241 bytes of the video file (use --test)',
             'info_dict': {
                 'id': '42',
                 'ext': 'mp4',
                 'title': 'Video title goes here',
-                'thumbnail': 're:^https?://.*\.jpg$',
+                'thumbnail': r're:^https?://.*\.jpg$',
                 # TODO more properties, either as:
                 # * A value
                 # * MD5 checksum; start the string with md5:
@@ -149,10 +151,10 @@ After you have ensured this site is distributing it's content legally, you can f
             }
     ```
 5. Add an import in [`youtube_dl/extractor/extractors.py`](https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/extractors.py).
-6. Run `python test/test_download.py TestDownload.test_YourExtractor`. This *should fail* at first, but you can continually re-run it until you're done. If you decide to add more than one test, then rename ``_TEST`` to ``_TESTS`` and make it into a list of dictionaries. The tests will then be named `TestDownload.test_YourExtractor`, `TestDownload.test_YourExtractor_1`, `TestDownload.test_YourExtractor_2`, etc.
+6. Run `python test/test_download.py TestDownload.test_YourExtractor`. This *should fail* at first, but you can continually re-run it until you're done. If you decide to add more than one test, then rename ``_TEST`` to ``_TESTS`` and make it into a list of dictionaries. The tests will then be named `TestDownload.test_YourExtractor`, `TestDownload.test_YourExtractor_1`, `TestDownload.test_YourExtractor_2`, etc. Note that tests with `only_matching` key in test's dict are not counted in.
 7. Have a look at [`youtube_dl/extractor/common.py`](https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/common.py) for possible helper methods and a [detailed description of what your extractor should and may return](https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/common.py#L74-L252). Add tests and code for as many as you want.
-8. Make sure your code follows [youtube-dl coding conventions](#youtube-dl-coding-conventions) and check the code with [flake8](https://pypi.python.org/pypi/flake8). Also make sure your code works under all [Python](http://www.python.org/) versions claimed supported by youtube-dl, namely 2.6, 2.7, and 3.2+.
-9. When the tests pass, [add](http://git-scm.com/docs/git-add) the new files and [commit](http://git-scm.com/docs/git-commit) them and [push](http://git-scm.com/docs/git-push) the result, like this:
+8. Make sure your code follows [youtube-dl coding conventions](#youtube-dl-coding-conventions) and check the code with [flake8](https://pypi.python.org/pypi/flake8). Also make sure your code works under all [Python](https://www.python.org/) versions claimed supported by youtube-dl, namely 2.6, 2.7, and 3.2+.
+9. When the tests pass, [add](https://git-scm.com/docs/git-add) the new files and [commit](https://git-scm.com/docs/git-commit) them and [push](https://git-scm.com/docs/git-push) the result, like this:
 
         $ git add youtube_dl/extractor/extractors.py
         $ git add youtube_dl/extractor/yourextractor.py
@@ -167,19 +169,19 @@ In any case, thank you very much for your contributions!
 
 This section introduces a guide lines for writing idiomatic, robust and future-proof extractor code.
 
-Extractors are very fragile by nature since they depend on the layout of the source data provided by 3rd party media hoster out of your control and this layout tend to change. As an extractor implementer your task is not only to write code that will extract media links and metadata correctly but also to minimize code dependency on source's layout changes and even to make the code foresee potential future changes and be ready for that. This is important because it will allow extractor not to break on minor layout changes thus keeping old youtube-dl versions working. Even though this breakage issue is easily fixed by emitting a new version of youtube-dl with fix incorporated all the previous version become broken in all repositories and distros' packages that may not be so prompt in fetching the update from us. Needless to say some may never receive an update at all that is possible for non rolling release distros.
+Extractors are very fragile by nature since they depend on the layout of the source data provided by 3rd party media hosters out of your control and this layout tends to change. As an extractor implementer your task is not only to write code that will extract media links and metadata correctly but also to minimize dependency on the source's layout and even to make the code foresee potential future changes and be ready for that. This is important because it will allow the extractor not to break on minor layout changes thus keeping old youtube-dl versions working. Even though this breakage issue is easily fixed by emitting a new version of youtube-dl with a fix incorporated, all the previous versions become broken in all repositories and distros' packages that may not be so prompt in fetching the update from us. Needless to say, some non rolling release distros may never receive an update at all.
 
 ### Mandatory and optional metafields
 
-For extraction to work youtube-dl relies on metadata your extractor extracts and provides to youtube-dl expressed by [information dictionary](https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/common.py#L75-L257) or simply *info dict*. Only the following meta fields in *info dict* are considered mandatory for successful extraction process by youtube-dl:
+For extraction to work youtube-dl relies on metadata your extractor extracts and provides to youtube-dl expressed by an [information dictionary](https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/common.py#L75-L257) or simply *info dict*. Only the following meta fields in the *info dict* are considered mandatory for a successful extraction process by youtube-dl:
 
  - `id` (media identifier)
  - `title` (media title)
  - `url` (media download URL) or `formats`
 
-In fact only the last option is technically mandatory (i.e. if you can't figure out the download location of the media the extraction does not make any sense). But by convention youtube-dl also treats `id` and `title` to be mandatory. Thus aforementioned metafields are the critical data the extraction does not make any sense without and if any of them fail to be extracted then extractor is considered completely broken.
+In fact only the last option is technically mandatory (i.e. if you can't figure out the download location of the media the extraction does not make any sense). But by convention youtube-dl also treats `id` and `title` as mandatory. Thus the aforementioned metafields are the critical data that the extraction does not make any sense without and if any of them fail to be extracted then the extractor is considered completely broken.
 
-[Any field](https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/common.py#L149-L257) apart from the aforementioned ones are considered **optional**. That means that extraction should be **tolerate** to situations when sources for these fields can potentially be unavailable (even if they are always available at the moment) and **future-proof** in order not to break the extraction of general purpose mandatory fields.
+[Any field](https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/common.py#L149-L257) apart from the aforementioned ones are considered **optional**. That means that extraction should be **tolerant** to situations when sources for these fields can potentially be unavailable (even if they are always available at the moment) and **future-proof** in order not to break the extraction of general purpose mandatory fields.
 
 #### Example
 
@@ -199,7 +201,7 @@ Assume at this point `meta`'s layout is:
 }
 ```
 
-Assume you want to extract `summary` and put into resulting info dict as `description`. Since `description` is optional metafield you should be ready that this key may be missing from the `meta` dict, so that you should extract it like:
+Assume you want to extract `summary` and put it into the resulting info dict as `description`. Since `description` is an optional meta field you should be ready that this key may be missing from the `meta` dict, so that you should extract it like:
 
 ```python
 description = meta.get('summary')  # correct
@@ -211,7 +213,7 @@ and not like:
 description = meta['summary']  # incorrect
 ```
 
-The latter will break extraction process with `KeyError` if `summary` disappears from `meta` at some time later but with former approach extraction will just go ahead with `description` set to `None` that is perfectly fine (remember `None` is equivalent for absence of data). 
+The latter will break extraction process with `KeyError` if `summary` disappears from `meta` at some later time but with the former approach extraction will just go ahead with `description` set to `None` which is perfectly fine (remember `None` is equivalent to the absence of data).
 
 Similarly, you should pass `fatal=False` when extracting optional data from a webpage with `_search_regex`, `_html_search_regex` or similar methods, for instance:
 
@@ -231,21 +233,21 @@ description = self._search_regex(
     webpage, 'description', default=None)
 ```
 
-On failure this code will silently continue the extraction with `description` set to `None`. That is useful for metafields that are known to may or may not be present.
+On failure this code will silently continue the extraction with `description` set to `None`. That is useful for metafields that may or may not be present.
  
 ### Provide fallbacks
 
-When extracting metadata try to provide several scenarios for that. For example if `title` is present in several places/sources try extracting from at least some of them. This would make it more future-proof in case some of the sources became unavailable.
+When extracting metadata try to do so from multiple sources. For example if `title` is present in several places, try extracting from at least some of them. This makes it more future-proof in case some of the sources become unavailable.
 
 #### Example
 
-Say `meta` from previous example has a `title` and you are about to extract it. Since `title` is mandatory meta field you should end up with something like:
+Say `meta` from the previous example has a `title` and you are about to extract it. Since `title` is a mandatory meta field you should end up with something like:
 
 ```python
 title = meta['title']
 ```
 
-If `title` disappeares from `meta` in future due to some changes on hoster's side the extraction would fail since `title` is mandatory. That's expected.
+If `title` disappears from `meta` in future due to some changes on the hoster's side the extraction would fail since `title` is mandatory. That's expected.
 
 Assume that you have some another source you can extract `title` from, for example `og:title` HTML meta of a `webpage`. In this case you can provide a fallback scenario:
 
@@ -282,7 +284,7 @@ title = self._search_regex(
     webpage, 'title', group='title')
 ```
 
-Note how you tolerate potential changes in `style` attribute's value or switch from using double quotes to single for `class` attribute: 
+Note how you tolerate potential changes in the `style` attribute's value or switch from using double quotes to single for `class` attribute: 
 
 The code definitely should not look like:
 

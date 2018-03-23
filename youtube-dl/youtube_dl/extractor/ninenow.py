@@ -4,15 +4,17 @@ from __future__ import unicode_literals
 from .common import InfoExtractor
 from ..compat import compat_str
 from ..utils import (
+    ExtractorError,
     int_or_none,
     float_or_none,
-    ExtractorError,
+    smuggle_url,
 )
 
 
 class NineNowIE(InfoExtractor):
     IE_NAME = '9now.com.au'
     _VALID_URL = r'https?://(?:www\.)?9now\.com\.au/(?:[^/]+/){2}(?P<id>[^/?#]+)'
+    _GEO_COUNTRIES = ['AU']
     _TESTS = [{
         # clip
         'url': 'https://www.9now.com.au/afl-footy-show/2016/clip-ciql02091000g0hp5oktrnytc',
@@ -44,7 +46,20 @@ class NineNowIE(InfoExtractor):
         page_data = self._parse_json(self._search_regex(
             r'window\.__data\s*=\s*({.*?});', webpage,
             'page data'), display_id)
-        common_data = page_data.get('episode', {}).get('episode') or page_data.get('clip', {}).get('clip')
+
+        for kind in ('episode', 'clip'):
+            current_key = page_data.get(kind, {}).get(
+                'current%sKey' % kind.capitalize())
+            if not current_key:
+                continue
+            cache = page_data.get(kind, {}).get('%sCache' % kind, {})
+            if not cache:
+                continue
+            common_data = (cache.get(current_key) or list(cache.values())[0])[kind]
+            break
+        else:
+            raise ExtractorError('Unable to find video data')
+
         video_data = common_data['video']
 
         if video_data.get('drm'):
@@ -62,7 +77,9 @@ class NineNowIE(InfoExtractor):
 
         return {
             '_type': 'url_transparent',
-            'url': self.BRIGHTCOVE_URL_TEMPLATE % brightcove_id,
+            'url': smuggle_url(
+                self.BRIGHTCOVE_URL_TEMPLATE % brightcove_id,
+                {'geo_countries': self._GEO_COUNTRIES}),
             'id': video_id,
             'title': title,
             'description': common_data.get('description'),

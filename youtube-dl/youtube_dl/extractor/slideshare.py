@@ -14,7 +14,7 @@ from ..utils import (
 
 
 class SlideshareIE(InfoExtractor):
-    _VALID_URL = r'https?://www\.slideshare\.net/[^/]+?/(?P<title>.+?)($|\?)'
+    _VALID_URL = r'https?://(?:www\.)?slideshare\.net/[^/]+?/(?P<title>.+?)($|\?)'
 
     _TEST = {
         'url': 'http://www.slideshare.net/Dataversity/keynote-presentation-managing-scale-and-complexity',
@@ -31,7 +31,7 @@ class SlideshareIE(InfoExtractor):
         page_title = mobj.group('title')
         webpage = self._download_webpage(url, page_title)
         slideshare_obj = self._search_regex(
-            r'\$\.extend\(slideshare_object,\s*(\{.*?\})\);',
+            r'\$\.extend\(.*?slideshare_object,\s*(\{.*?\})\);',
             webpage, 'slideshare object')
         info = json.loads(slideshare_obj)
         if info['slideshow']['type'] != 'video':

@@ -4,8 +4,8 @@ const loudRejection = require('loud-rejection');
 loudRejection();
 // let id = 'vKosBJ1Uko0'
 // let id = 'q_q61B-DyPk'
-// let id ='TImPW-khOww'
-let id = 'WvMPvPFWgTM'
+let id ='TImPW-khOww' // Has nonauto
+//let id = 'OFPwDe22CoY'
 getYoutubeSubtitleUrl(id, {
   type: 'either'
 })
