@@ -1,9 +1,13 @@
-# encoding: utf-8
+# coding: utf-8
 from __future__ import unicode_literals
 
 import re
 
 from .common import InfoExtractor
+from .nexx import (
+    NexxIE,
+    NexxEmbedIE,
+)
 from .spiegeltv import SpiegeltvIE
 from ..compat import compat_urlparse
 from ..utils import (
@@ -50,6 +54,10 @@ class SpiegelIE(InfoExtractor):
     }, {
         'url': 'http://www.spiegel.de/video/astronaut-alexander-gerst-von-der-iss-station-beantwortet-fragen-video-1519126-iframe.html',
         'only_matching': True,
+    }, {
+        # nexx video
+        'url': 'http://www.spiegel.de/video/spiegel-tv-magazin-ueber-guellekrise-in-schleswig-holstein-video-99012776.html',
+        'only_matching': True,
     }]
 
     def _real_extract(self, url):
@@ -59,6 +67,14 @@ class SpiegelIE(InfoExtractor):
         # 302 to spiegel.tv, like http://www.spiegel.de/video/der-film-zum-wochenende-die-wahrheit-ueber-maenner-video-99003272.html
         if SpiegeltvIE.suitable(handle.geturl()):
             return self.url_result(handle.geturl(), 'Spiegeltv')
+
+        nexx_id = self._search_regex(
+            r'nexxOmniaId\s*:\s*(\d+)', webpage, 'nexx id', default=None)
+        if nexx_id:
+            domain_id = NexxIE._extract_domain_id(webpage) or '748'
+            return self.url_result(
+                'nexx:%s:%s' % (domain_id, nexx_id), ie=NexxIE.ie_key(),
+                video_id=nexx_id)
 
         video_data = extract_attributes(self._search_regex(r'(<div[^>]+id="spVideoElements"[^>]+>)', webpage, 'video element', default=''))
 
@@ -103,7 +119,7 @@ class SpiegelIE(InfoExtractor):
 
 
 class SpiegelArticleIE(InfoExtractor):
-    _VALID_URL = 'https?://www\.spiegel\.de/(?!video/)[^?#]*?-(?P<id>[0-9]+)\.html'
+    _VALID_URL = r'https?://(?:www\.)?spiegel\.de/(?!video/)[^?#]*?-(?P<id>[0-9]+)\.html'
     IE_NAME = 'Spiegel:Article'
     IE_DESC = 'Articles on spiegel.de'
     _TESTS = [{
@@ -121,6 +137,26 @@ class SpiegelArticleIE(InfoExtractor):
 
         },
         'playlist_count': 6,
+    }, {
+        # Nexx iFrame embed
+        'url': 'http://www.spiegel.de/sptv/spiegeltv/spiegel-tv-ueber-schnellste-katapult-achterbahn-der-welt-taron-a-1137884.html',
+        'info_dict': {
+            'id': '161464',
+            'ext': 'mp4',
+            'title': 'Nervenkitzel Achterbahn',
+            'alt_title': 'Karussellbauer in Deutschland',
+            'description': 'md5:ffe7b1cc59a01f585e0569949aef73cc',
+            'release_year': 2005,
+            'creator': 'SPIEGEL TV',
+            'thumbnail': r're:^https?://.*\.jpg$',
+            'duration': 2761,
+            'timestamp': 1394021479,
+            'upload_date': '20140305',
+        },
+        'params': {
+            'format': 'bestvideo',
+            'skip_download': True,
+        },
     }]
 
     def _real_extract(self, url):
@@ -143,6 +179,9 @@ class SpiegelArticleIE(InfoExtractor):
         entries = [
             self.url_result(compat_urlparse.urljoin(
                 self.http_scheme() + '//spiegel.de/', embed_path))
-            for embed_path in embeds
-        ]
-        return self.playlist_result(entries)
+            for embed_path in embeds]
+        if embeds:
+            return self.playlist_result(entries)
+
+        return self.playlist_from_matches(
+            NexxEmbedIE._extract_urls(webpage), ie=NexxEmbedIE.ie_key())

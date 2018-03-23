@@ -15,15 +15,16 @@ from ..utils import (
 class TVPIE(InfoExtractor):
     IE_NAME = 'tvp'
     IE_DESC = 'Telewizja Polska'
-    _VALID_URL = r'https?://[^/]+\.tvp\.(?:pl|info)/(?:(?!\d+/)[^/]+/)*(?P<id>\d+)'
+    _VALID_URL = r'https?://[^/]+\.tvp\.(?:pl|info)/(?:video/(?:[^,\s]*,)*|(?:(?!\d+/)[^/]+/)*)(?P<id>\d+)'
 
     _TESTS = [{
-        'url': 'http://vod.tvp.pl/194536/i-seria-odc-13',
+        'url': 'https://vod.tvp.pl/video/czas-honoru,i-seria-odc-13,194536',
         'md5': '8aa518c15e5cc32dfe8db400dc921fbb',
         'info_dict': {
             'id': '194536',
             'ext': 'mp4',
             'title': 'Czas honoru, I seria – odc. 13',
+            'description': 'md5:381afa5bca72655fe94b05cfe82bf53d',
         },
     }, {
         'url': 'http://www.tvp.pl/there-can-be-anything-so-i-shortened-it/17916176',
@@ -32,6 +33,17 @@ class TVPIE(InfoExtractor):
             'id': '17916176',
             'ext': 'mp4',
             'title': 'TVP Gorzów pokaże filmy studentów z podroży dookoła świata',
+            'description': 'TVP Gorzów pokaże filmy studentów z podroży dookoła świata',
+        },
+    }, {
+        # page id is not the same as video id(#7799)
+        'url': 'https://wiadomosci.tvp.pl/33908820/28092017-1930',
+        'md5': '84cd3c8aec4840046e5ab712416b73d0',
+        'info_dict': {
+            'id': '33908820',
+            'ext': 'mp4',
+            'title': 'Wiadomości, 28.09.2017, 19:30',
+            'description': 'Wydanie główne codziennego serwisu informacyjnego.'
         },
     }, {
         'url': 'http://vod.tvp.pl/seriale/obyczajowe/na-sygnale/sezon-2-27-/odc-39/17834272',
@@ -50,6 +62,40 @@ class TVPIE(InfoExtractor):
         'only_matching': True,
     }, {
         'url': 'http://www.tvp.info/25511919/trwa-rewolucja-wladza-zdecydowala-sie-na-pogwalcenie-konstytucji',
+        'only_matching': True,
+    }]
+
+    def _real_extract(self, url):
+        page_id = self._match_id(url)
+        webpage = self._download_webpage(url, page_id)
+        video_id = self._search_regex([
+            r'<iframe[^>]+src="[^"]*?object_id=(\d+)',
+            r"object_id\s*:\s*'(\d+)'",
+            r'data-video-id="(\d+)"'], webpage, 'video id', default=page_id)
+        return {
+            '_type': 'url_transparent',
+            'url': 'tvp:' + video_id,
+            'description': self._og_search_description(webpage, default=None),
+            'thumbnail': self._og_search_thumbnail(webpage),
+            'ie_key': 'TVPEmbed',
+        }
+
+
+class TVPEmbedIE(InfoExtractor):
+    IE_NAME = 'tvp:embed'
+    IE_DESC = 'Telewizja Polska'
+    _VALID_URL = r'(?:tvp:|https?://[^/]+\.tvp\.(?:pl|info)/sess/tvplayer\.php\?.*?object_id=)(?P<id>\d+)'
+
+    _TESTS = [{
+        'url': 'http://www.tvp.pl/sess/tvplayer.php?object_id=22670268',
+        'md5': '8c9cd59d16edabf39331f93bf8a766c7',
+        'info_dict': {
+            'id': '22670268',
+            'ext': 'mp4',
+            'title': 'Panorama, 07.12.2015, 15:40',
+        },
+    }, {
+        'url': 'tvp:22670268',
         'only_matching': True,
     }]
 
@@ -94,6 +140,9 @@ class TVPIE(InfoExtractor):
             # formats.extend(self._extract_mpd_formats(
             #     video_url_base + '.ism/video.mpd',
             #     video_id, mpd_id='dash', fatal=False))
+            formats.extend(self._extract_ism_formats(
+                video_url_base + '.ism/Manifest',
+                video_id, 'mss', fatal=False))
             formats.extend(self._extract_f4m_formats(
                 video_url_base + '.ism/video.f4m',
                 video_id, f4m_id='hds', fatal=False))
@@ -102,8 +151,7 @@ class TVPIE(InfoExtractor):
                 'mp4', 'm3u8_native', m3u8_id='hls', fatal=False)
             self._sort_formats(m3u8_formats)
             m3u8_formats = list(filter(
-                lambda f: f.get('vcodec') != 'none' and f.get('resolution') != 'multiple',
-                m3u8_formats))
+                lambda f: f.get('vcodec') != 'none', m3u8_formats))
             formats.extend(m3u8_formats)
             for i, m3u8_format in enumerate(m3u8_formats, 2):
                 http_url = '%s-%d.mp4' % (video_url_base, i)

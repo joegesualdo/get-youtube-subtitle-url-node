@@ -75,6 +75,12 @@ class YandexMusicTrackIE(YandexMusicBaseIE):
             % storage_dir,
             track_id, 'Downloading track location JSON')
 
+        # Each string is now wrapped in a list, this is probably only temporarily thus
+        # supporting both scenarios (see https://github.com/rg3/youtube-dl/issues/10193)
+        for k, v in data.items():
+            if v and isinstance(v, list):
+                data[k] = v[0]
+
         key = hashlib.md5(('XGRlBW9FXlekgbPrRHuSiA' + data['path'][1:] + data['s']).encode('utf-8')).hexdigest()
         storage = storage_dir.split('.')
 
@@ -228,7 +234,8 @@ class YandexMusicPlaylistIE(YandexMusicPlaylistBaseIE):
                 'overembed': 'false',
             })['playlist']
 
-        tracks, track_ids = playlist['tracks'], map(compat_str, playlist['trackIds'])
+        tracks = playlist['tracks']
+        track_ids = [compat_str(track_id) for track_id in playlist['trackIds']]
 
         # tracks dictionary shipped with playlist.jsx API is limited to 150 tracks,
         # missing tracks should be retrieved manually.

@@ -1,4 +1,4 @@
-# encoding: utf-8
+# coding: utf-8
 from __future__ import unicode_literals
 
 import re
@@ -8,16 +8,20 @@ from ..compat import (
     compat_str,
     compat_urllib_parse_urlencode,
 )
-from ..utils import ExtractorError
+from ..utils import (
+    ExtractorError,
+    int_or_none,
+    try_get,
+)
 
 
 class SohuIE(InfoExtractor):
     _VALID_URL = r'https?://(?P<mytv>my\.)?tv\.sohu\.com/.+?/(?(mytv)|n)(?P<id>\d+)\.shtml.*?'
 
+    # Sohu videos give different MD5 sums on Travis CI and my machine
     _TESTS = [{
         'note': 'This video is available only in Mainland China',
         'url': 'http://tv.sohu.com/20130724/n382479172.shtml#super',
-        'md5': '29175c8cadd8b5cc4055001e85d6b372',
         'info_dict': {
             'id': '382479172',
             'ext': 'mp4',
@@ -26,7 +30,6 @@ class SohuIE(InfoExtractor):
         'skip': 'On available in China',
     }, {
         'url': 'http://tv.sohu.com/20150305/n409385080.shtml',
-        'md5': '699060e75cf58858dd47fb9c03c42cfb',
         'info_dict': {
             'id': '409385080',
             'ext': 'mp4',
@@ -34,7 +37,6 @@ class SohuIE(InfoExtractor):
         }
     }, {
         'url': 'http://my.tv.sohu.com/us/232799889/78693464.shtml',
-        'md5': '9bf34be48f2f4dadcb226c74127e203c',
         'info_dict': {
             'id': '78693464',
             'ext': 'mp4',
@@ -48,7 +50,6 @@ class SohuIE(InfoExtractor):
             'title': '【神探苍实战秘籍】第13期 战争之影 赫卡里姆',
         },
         'playlist': [{
-            'md5': 'bdbfb8f39924725e6589c146bc1883ad',
             'info_dict': {
                 'id': '78910339_part1',
                 'ext': 'mp4',
@@ -56,7 +57,6 @@ class SohuIE(InfoExtractor):
                 'title': '【神探苍实战秘籍】第13期 战争之影 赫卡里姆',
             }
         }, {
-            'md5': '3e1f46aaeb95354fd10e7fca9fc1804e',
             'info_dict': {
                 'id': '78910339_part2',
                 'ext': 'mp4',
@@ -64,7 +64,6 @@ class SohuIE(InfoExtractor):
                 'title': '【神探苍实战秘籍】第13期 战争之影 赫卡里姆',
             }
         }, {
-            'md5': '8407e634175fdac706766481b9443450',
             'info_dict': {
                 'id': '78910339_part3',
                 'ext': 'mp4',
@@ -113,12 +112,11 @@ class SohuIE(InfoExtractor):
         if vid_data['play'] != 1:
             if vid_data.get('status') == 12:
                 raise ExtractorError(
-                    'Sohu said: There\'s something wrong in the video.',
+                    '%s said: There\'s something wrong in the video.' % self.IE_NAME,
                     expected=True)
             else:
-                raise ExtractorError(
-                    'Sohu said: The video is only licensed to users in Mainland China.',
-                    expected=True)
+                self.raise_geo_restricted(
+                    '%s said: The video is only licensed to users in Mainland China.' % self.IE_NAME)
 
         formats_json = {}
         for format_id in ('nor', 'high', 'super', 'ori', 'h2644k', 'h2654k'):
@@ -175,10 +173,11 @@ class SohuIE(InfoExtractor):
                 formats.append({
                     'url': video_url,
                     'format_id': format_id,
-                    'filesize': data['clipsBytes'][i],
-                    'width': data['width'],
-                    'height': data['height'],
-                    'fps': data['fps'],
+                    'filesize': int_or_none(
+                        try_get(data, lambda x: x['clipsBytes'][i])),
+                    'width': int_or_none(data.get('width')),
+                    'height': int_or_none(data.get('height')),
+                    'fps': int_or_none(data.get('fps')),
                 })
             self._sort_formats(formats)
 

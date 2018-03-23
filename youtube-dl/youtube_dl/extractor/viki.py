@@ -1,11 +1,12 @@
 # coding: utf-8
 from __future__ import unicode_literals
 
-import json
-import time
-import hmac
 import hashlib
+import hmac
 import itertools
+import json
+import re
+import time
 
 from .common import InfoExtractor
 from ..utils import (
@@ -22,10 +23,11 @@ class VikiBaseIE(InfoExtractor):
     _API_QUERY_TEMPLATE = '/v4/%sapp=%s&t=%s&site=www.viki.com'
     _API_URL_TEMPLATE = 'http://api.viki.io%s&sig=%s'
 
-    _APP = '65535a'
+    _APP = '100005a'
     _APP_VERSION = '2.2.5.1428709186'
-    _APP_SECRET = '-$iJ}@p7!G@SyU/je1bEyWg}upLu-6V6-Lg9VD(]siH,r.,m-r|ulZ,U4LC/SeR)'
+    _APP_SECRET = 'MM_d*yP@`&1@]@!AVrXf_o-HVEnoTnm$O-ti4[G~$JDI/Dc-&piU&z&5.;:}95=Iad'
 
+    _GEO_BYPASS = False
     _NETRC_MACHINE = 'viki'
 
     _token = None
@@ -76,8 +78,11 @@ class VikiBaseIE(InfoExtractor):
     def _check_errors(self, data):
         for reason, status in data.get('blocking', {}).items():
             if status and reason in self._ERRORS:
+                message = self._ERRORS[reason]
+                if reason == 'geo':
+                    self.raise_geo_restricted(msg=message)
                 raise ExtractorError('%s said: %s' % (
-                    self.IE_NAME, self._ERRORS[reason]), expected=True)
+                    self.IE_NAME, message), expected=True)
 
     def _real_initialize(self):
         self._login()
@@ -94,7 +99,7 @@ class VikiBaseIE(InfoExtractor):
 
         login = self._call_api(
             'sessions.json', None,
-            'Logging in as %s' % username, post_data=login_form)
+            'Logging in', post_data=login_form)
 
         self._token = login.get('token')
         if not self._token:
@@ -276,10 +281,14 @@ class VikiIE(VikiBaseIE):
             height = int_or_none(self._search_regex(
                 r'^(\d+)[pP]$', format_id, 'height', default=None))
             for protocol, format_dict in stream_dict.items():
+                # rtmps URLs does not seem to work
+                if protocol == 'rtmps':
+                    continue
+                format_url = format_dict['url']
                 if format_id == 'm3u8':
                     m3u8_formats = self._extract_m3u8_formats(
-                        format_dict['url'], video_id, 'mp4',
-                        entry_protocol='m3u8_native', preference=-1,
+                        format_url, video_id, 'mp4',
+                        entry_protocol='m3u8_native',
                         m3u8_id='m3u8-%s' % protocol, fatal=False)
                     # Despite CODECS metadata in m3u8 all video-only formats
                     # are actually video+audio
@@ -287,9 +296,23 @@ class VikiIE(VikiBaseIE):
                         if f.get('acodec') == 'none' and f.get('vcodec') != 'none':
                             f['acodec'] = None
                     formats.extend(m3u8_formats)
+                elif format_url.startswith('rtmp'):
+                    mobj = re.search(
+                        r'^(?P<url>rtmp://[^/]+/(?P<app>.+?))/(?P<playpath>mp4:.+)$',
+                        format_url)
+                    if not mobj:
+                        continue
+                    formats.append({
+                        'format_id': 'rtmp-%s' % format_id,
+                        'ext': 'flv',
+                        'url': mobj.group('url'),
+                        'play_path': mobj.group('playpath'),
+                        'app': mobj.group('app'),
+                        'page_url': url,
+                    })
                 else:
                     formats.append({
-                        'url': format_dict['url'],
+                        'url': format_url,
                         'format_id': '%s-%s' % (format_id, protocol),
                         'height': height,
                     })

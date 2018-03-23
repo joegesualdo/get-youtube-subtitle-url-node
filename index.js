@@ -1,7 +1,14 @@
 "use strict"
 
+// When debugging it helps to see what payload youtube-dl returns. You
+//   could do it like this
+//
+//   $ youtube-dl --write-auto-sub --skip-download -j https://www.youtube.com/watch?v=TImPW-khOww | prettyjson
+
 const PythonShell = require('python-shell');
 var appRoot = require('app-root-path');
+var beautify = require("json-beautify");
+var json = require('format-json');
 
 const loudRejection = require('loud-rejection');
 loudRejection();
@@ -18,6 +25,7 @@ function getAutoSubs(videoId) {
       scriptPath: `${__dirname}/youtube-dl/youtube_dl`,
       args: [
         '--write-auto-sub',
+        '-j',
         '--skip-download',
         '--sub-format',
         'vtt',
@@ -26,11 +34,12 @@ function getAutoSubs(videoId) {
       if (err) {
         reject(err);
       } else {
-        if (results.indexOf('Default Subtitle:') === -1) {
-          reject(new Error(`No subtitles for video: ${videoId} `));
-        } else {
-          resolve(results[results.indexOf('Default Subtitle:') + 1]);
-        }
+          var response = JSON.parse(results[0])
+          var automatic_captions = response["automatic_captions"]
+          var english_captions = automatic_captions["en"]
+          var english_vtt_captions = automatic_captions["en"].filter((caption, index) => caption["ext"] === "vtt")[0]
+          var english_vtt_captions_url = english_vtt_captions["url"]
+          resolve(english_vtt_captions_url);
       }
     });
   });
@@ -42,19 +51,22 @@ function getNonAutoSubs(videoId) {
       scriptPath: `${__dirname}/youtube-dl/youtube_dl`,
       args: [
         '--write-sub',
+        '-j',
         '--skip-download',
         '--sub-format',
         'vtt',
         `https://www.youtube.com/watch?v=${videoId}`],
     }, (err, results) => {
+
       if (err) {
         reject(err);
       } else {
-        if (results.indexOf('Default Subtitle:') === -1) {
-          reject(new Error(`No subtitles for video: ${videoId} `));
-        } else {
-          resolve(results[results.indexOf('Default Subtitle:') + 1]);
-        }
+        // console.log(results)
+        var response = JSON.parse(results[0])
+        var automatic_captions = response["requested_subtitles"]
+        var english_captions = automatic_captions["en"]
+        var english_captions_url = english_captions["url"]
+        resolve(english_captions_url);
       }
     });
   });
@@ -84,7 +96,7 @@ function getYoutubeSubtitleUrl(videoId, opts) {
       .catch(err => {
         if (err.message.indexOf("video doesn't have subtitles")) {
           // reject(new NonExistentSubtitleError(`Non-auto Subtitles dont exist for ${videoId}`));
-          reject(`Auto Subtitles dont exist for ${videoId}`);
+          reject(`Subtitles dont exist for ${videoId}`);
         } else {
           reject(err);
         }
